@@ -7,7 +7,6 @@
 //0xcccc 烫
 //0xcdcd 屯
 
-
 using namespace std;
 
 void main()
@@ -22,6 +21,13 @@ void main()
 	grap.init();
 //	grap.PFS_travel();
 //	grap.prime(0);
-	grap.dijkstra(0);
-
+//	grap.dijkstra(0);
+	grap.Tsort(0);
+//	grap.TsortQueue();
 }
+
+
+
+//2种方法：
+//1：入度为0点输出拓扑排序，队列
+//2：出度为0点输出，为拓扑排序的逆过程，仿照DFS，栈逆序

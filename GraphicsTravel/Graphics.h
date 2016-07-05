@@ -37,7 +37,8 @@ public:
 	vector<vector<int> > G;
 	vector<vertex<T> > V;//端点
 	vector<bool> visited;
-	Grap(int m):n(m),G(m,vector<int>(m,0)),V(m,vertex<T>(m,10)),visited(m,false)//5*5 矩阵
+	vector<int> Tvisited;
+	Grap(int m):n(m),G(m,vector<int>(m,0)),V(m,vertex<T>(m,10)),visited(m,false),Tvisited(m,0)//5*5 矩阵
 	{
 	}
 	~Grap()
@@ -50,7 +51,7 @@ public:
 	void PFS_travel();//优先级优先搜索
 	void prime(int a);//最小生成树
 	void dijkstra(int a);//最优路径规划
-	void Tsort();
+	void Tsort(int s);//拓扑排序
 
 	void DFS(int v);
 	void PFS(int v);
@@ -58,6 +59,8 @@ public:
 	void updatePriority(int s,int w);
 	void DUP(int s,int w);//dijkstra 最优路径规划优先级更新算法
 	void PUP(int s,int w);//prime 最小生成树优先级更新算法
+	void TsortDFS(int v,stack<vertex<T> > * st);//基于DFS 拓扑排序 
+	void TsortQueue();
 };
 
 
@@ -103,14 +106,14 @@ int Grap<T>::nextV(int self,int index)//自己的索引，下一寻找节点的开始索引
 三个点的有向图
 0->1
 0->2
-1->2
+2->1
 */
 template <typename T>
 void Grap<T>::init()//图初始化
 {
-	G[0][1]=2;
-	G[0][2]=1;
-	G[2][1]=2;
+	G[0][1]=2;//1,0
+	G[0][2]=1;//
+	G[2][1]=2;//1,2
 
 	for(int v=0;v<this->n;v++)
 	{
@@ -328,6 +331,125 @@ void Grap<T>::DUP(int s,int w)
 }
 
 
+
+
+
+
+
+template <typename T>
+void Grap<T>::TsortDFS(int v,stack<vertex<T> > * st)
+{
+	this->Tvisited[v]=1;//路径状态
+	for(int num=nextV(v,0);num<this->n;num=nextV(v,num+1))
+	{
+		if(this->Tvisited[num]==0)
+		{
+			TsortDFS(num,st);
+		}
+		else if(this->Tvisited[num]==1)
+		{
+			cout<<"有环！！！！"<<endl;
+			return;
+		}
+	}
+
+	st->push(this->V[v]);
+	this->Tvisited[v]=2;//入栈状态
+}
+
+  
+
+// 用优先级保存节点的入度，入度为0则进行输出
+
+template <typename T>
+void Grap<T>::Tsort(int s)
+{
+	stack<vertex<T> > st;
+	int sum;
+	//init出度
+	for(int i=0;i<this->n;i++)
+	{
+		sum=0;
+		this->Tvisited[i]=0;
+		for(int j=0;j<this->n;j++)
+		{
+			if(this->G[i][j]>0)//出度
+				sum++;
+		}
+		this->V[i].priority=sum;
+	}
+
+
+	for(int j=0;j<this->n;j++)
+	{
+		if(this->Tvisited[j]==0)
+			TsortDFS(j,&st);
+	}
+
+	cout<<st.size()<<endl;
+	if(st.size() == this->n)
+	{
+		cout<<"拓扑排序成功: "<<endl;
+		while(!st.empty())
+		{
+			st.top().vprint();
+			st.pop();
+		}
+	}
+	else
+	{
+		cout<<"拓扑排序失败!"<<endl;
+	}
+}
+
+
+/*
+
+0->1
+0->2
+2->1
+
+*/
+
+template <typename T>
+void Grap<T>::TsortQueue()
+{
+	queue<int>q;
+	
+	int temp;
+	int sum;
+	 //init入度
+	for(int i=0;i<this->n;i++)
+	{
+		sum = 0;
+		this->visited[i]=false;
+		for(int j=0;j<this->n;j++)
+		{
+			if(this->G[j][i]>0)//出度
+				sum++;
+		}
+		this->V[i].priority=sum;
+		if(sum == 0)
+		{
+			q.push(i);
+		}
+	}
+	while(!q.empty())
+	{
+		temp=q.front();
+		V[temp].vprint();
+		q.pop();
+		for(int i=0;i<=this->n;i++)//遍历从temp出发的每一条边，入度--
+		{
+			if(G[temp][i]>0)
+			{
+				V[i].priority--;
+				if(V[i].priority==0)
+					q.push(i);
+			}
+		}
+	}
+}
 
 
 #endif
