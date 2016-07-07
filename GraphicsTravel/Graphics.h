@@ -51,7 +51,14 @@ public:
 	void PFS_travel();//优先级优先搜索
 	void prime(int a);//最小生成树
 	void dijkstra(int a);//最优路径规划
+	
+//2种方法：
+//1：入度为0点输出拓扑排序，队列
+//2：出度为0点输出，为拓扑排序的逆过程，仿照DFS，栈逆序
+
 	void Tsort(int s);//拓扑排序
+	void TsortDFS(int v,stack<vertex<T> > * st);//基于DFS 拓扑排序 
+	void TsortQueue();
 
 	void DFS(int v);
 	void PFS(int v);
@@ -59,8 +66,6 @@ public:
 	void updatePriority(int s,int w);
 	void DUP(int s,int w);//dijkstra 最优路径规划优先级更新算法
 	void PUP(int s,int w);//prime 最小生成树优先级更新算法
-	void TsortDFS(int v,stack<vertex<T> > * st);//基于DFS 拓扑排序 
-	void TsortQueue();
 };
 
 
@@ -210,7 +215,7 @@ void Grap<T>::PFS(int v)
 			}
 		}
 		if(this->visited[minind])
-			break;
+			break;//优先级最高的已经访问过，说明所有节点访问完毕
 		else
 		{
 			this->visited[minind]=true;

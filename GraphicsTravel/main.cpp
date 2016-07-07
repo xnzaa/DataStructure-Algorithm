@@ -9,8 +9,11 @@
 
 using namespace std;
 
+
+
 void main()
 {
+
 
 	vector<int> v(5,-5);
 	for(vector<int>::iterator ite=v.begin();ite<v.end();ite++)
@@ -27,7 +30,3 @@ void main()
 }
 
 
-
-//2种方法：
-//1：入度为0点输出拓扑排序，队列
-//2：出度为0点输出，为拓扑排序的逆过程，仿照DFS，栈逆序
